@@ -5,15 +5,12 @@ namespace Database\Factories;
 use App\Models\Office;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @extends Factory<Office>
  */
 class OfficeFactory extends Factory
 {
-    use HasFactory;
-
     /**
      * Define the model's default state.
      *

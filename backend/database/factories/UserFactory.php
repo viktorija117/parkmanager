@@ -6,15 +6,12 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
-
-    use HasFactory;
     /**
      * The current password being used by the factory.
      */

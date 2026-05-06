@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Reservation extends Model
 {
+
+    use HasFactory;
+
     protected $fillable = ['user_id', 'parking_space_id', 'date', 'status', 'cancellation_reason', 'cancelled_by', 'cancelled_at'];
 
     protected $casts = [

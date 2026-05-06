@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PermanentReservation extends Model
 {
+
+    use HasFactory;
+
     protected $fillable = ['user_id', 'parking_space_id', 'admin_notes', 'starts_on', 'ends_on', 'assigned_by'];
 
     protected $casts = [

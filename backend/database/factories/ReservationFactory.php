@@ -6,7 +6,6 @@ use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\ParkingSpace;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 /**
@@ -14,8 +13,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class ReservationFactory extends Factory
 {
-    use HasFactory;
-
     /**
      * Define the model's default state.
      *
