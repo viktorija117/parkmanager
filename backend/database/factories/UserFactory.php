@@ -6,12 +6,15 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
+
+    use HasFactory;
     /**
      * The current password being used by the factory.
      */
@@ -38,8 +41,18 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn() => ['role' => 'admin']);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn() => ['is_active' => false]);
     }
 }
