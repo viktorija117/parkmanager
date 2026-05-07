@@ -10,5 +10,8 @@ class ReservationCancelled
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly Reservation $reservation) {}
+    public function __construct(
+        public readonly Reservation $reservation,
+        public readonly bool $byAdmin = false,
+    ) {}
 }

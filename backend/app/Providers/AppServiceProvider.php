@@ -6,6 +6,7 @@ use App\Events\ReservationCancelled;
 use App\Events\ReservationCreated;
 use App\Listeners\LogReservationCancelled;
 use App\Listeners\LogReservationCreated;
+use App\Listeners\NotifyUserReservationCancelledByAdmin;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -25,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(ReservationCreated::class, LogReservationCreated::class);
         Event::listen(ReservationCancelled::class, LogReservationCancelled::class);
+        Event::listen(ReservationCancelled::class, NotifyUserReservationCancelledByAdmin::class);
     }
 }
