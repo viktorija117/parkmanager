@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\ParkingSpaceController;
+use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Auth\AuthController;
@@ -20,5 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::apiResource('spaces', ParkingSpaceController::class)->except(['show']);
+        Route::apiResource('users', UserController::class)->except(['show']);
     });
 });
