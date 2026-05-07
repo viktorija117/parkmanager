@@ -8,7 +8,7 @@ class ReservationRules
 {
     public static function canReserve(Carbon $date): bool
     {
-        $maxDate = today()->addDays(config('parking.reservation_window_days'));
+        $maxDate = today()->addDays((int) config('parking.reservation_window_days'));
 
         return $date->isFuture() && $date->lte($maxDate) && $date->isWeekday();
     }
@@ -17,7 +17,7 @@ class ReservationRules
     {
         $cutoff = $reservationDate->copy()
             ->subDay()
-            ->setHour(config('parking.cancellation_cutoff_hour'))
+            ->setHour((int) config('parking.cancellation_cutoff_hour'))
             ->setMinute(59);
 
         return now()->lt($cutoff);
