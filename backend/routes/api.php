@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Api\CalendarController;
+use App\Http\Controllers\Api\ReservationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,6 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/calendar/week', [CalendarController::class, 'week']);
     Route::get('/calendar/day', [CalendarController::class, 'day']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('reservations', ReservationController::class)->except(['update']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
