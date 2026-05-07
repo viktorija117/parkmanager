@@ -27,7 +27,7 @@ class ReservationCancellationTest extends TestCase
         $user = User::factory()->create();
         $reservation = Reservation::factory()->create([
             'user_id' => $user->id,
-            'date'    => $this->nextWeekday(),
+            'date' => $this->nextWeekday(),
         ]);
 
         $this->actingAs($user)
@@ -51,7 +51,7 @@ class ReservationCancellationTest extends TestCase
         $user = User::factory()->create();
         $reservation = Reservation::factory()->create([
             'user_id' => $user->id,
-            'date'    => $this->nextWeekday(),
+            'date' => $this->nextWeekday(),
         ]);
 
         $this->actingAs($user)
@@ -63,11 +63,11 @@ class ReservationCancellationTest extends TestCase
 
     public function test_user_cannot_cancel_another_users_reservation(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
         $reservation = Reservation::factory()->create([
             'user_id' => $other->id,
-            'date'    => $this->nextWeekday(),
+            'date' => $this->nextWeekday(),
         ]);
 
         $this->actingAs($user)
@@ -83,7 +83,7 @@ class ReservationCancellationTest extends TestCase
         $date = $this->nextWeekday();
         $reservation = Reservation::factory()->create([
             'user_id' => $user->id,
-            'date'    => $date,
+            'date' => $date,
         ]);
 
         // Travel to the reservation day itself — past the cutoff (day before at 23:59)
@@ -102,10 +102,10 @@ class ReservationCancellationTest extends TestCase
     {
         $owner = User::factory()->create();
         $other = User::factory()->create();
-        $date  = $this->nextWeekday();
+        $date = $this->nextWeekday();
         $reservation = Reservation::factory()->create([
             'user_id' => $owner->id,
-            'date'    => $date,
+            'date' => $date,
         ]);
 
         $spaceId = $reservation->parking_space_id;
@@ -116,17 +116,17 @@ class ReservationCancellationTest extends TestCase
 
         $this->actingAs($other)
             ->postJson('/api/reservations', [
-                'type'             => 'single',
-                'date'             => $date,
+                'type' => 'single',
+                'date' => $date,
                 'parking_space_id' => $spaceId,
             ])
             ->assertOk();
 
         $this->assertDatabaseHas('reservations', [
-            'user_id'          => $other->id,
+            'user_id' => $other->id,
             'parking_space_id' => $spaceId,
-            'date'             => $date,
-            'status'           => 'confirmed',
+            'date' => $date,
+            'status' => 'confirmed',
         ]);
     }
 
@@ -143,10 +143,10 @@ class ReservationCancellationTest extends TestCase
     public function test_admin_can_cancel_any_reservation(): void
     {
         $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $reservation = Reservation::factory()->create([
             'user_id' => $user->id,
-            'date'    => $this->nextWeekday(),
+            'date' => $this->nextWeekday(),
         ]);
 
         $this->actingAs($admin)
