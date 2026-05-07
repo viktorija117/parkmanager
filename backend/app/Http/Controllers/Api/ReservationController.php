@@ -16,14 +16,19 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
-        $reservations = Reservation::confirmed()
-            ->where('user_id', $request->user()->id)
-            ->upcoming()
-            ->with('parkingSpace')
-            ->orderBy('date')
-            ->get();
+        $request->validate([
+            'scope' => 'sometimes|in:upcoming,past,all',
+        ]);
 
-        return ReservationResource::collection($reservations);
+        $query = $request->user()->reservations()->with('parkingSpace');
+
+        match ($request->get('scope', 'upcoming')) {
+            'upcoming' => $query->confirmed()->upcoming()->orderBy('date'),
+            'past'     => $query->where('date', '<', today())->orderByDesc('date'),
+            'all'      => $query->orderByDesc('date'),
+        };
+
+        return ReservationResource::collection($query->paginate(20));
     }
 
     public function store(CreateReservationRequest $request)
