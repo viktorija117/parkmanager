@@ -8,12 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsAdmin
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (! $request->user()?->isAdmin()) {
-            abort(403);
+        if (! $request->user() || ! $request->user()->isAdmin()) {
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
-
         return $next($request);
     }
 }

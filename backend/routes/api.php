@@ -17,3 +17,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::put('/profile/password', [ProfileController::class, 'changePassword']);
 });
+
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
