@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'logout',
             'forgot-password',
             'reset-password',
+            'api/profile',
+            'api/profile/password',
         ]);
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
