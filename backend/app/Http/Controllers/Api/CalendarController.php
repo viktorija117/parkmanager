@@ -15,7 +15,7 @@ class CalendarController extends Controller
     public function week(Request $request)
     {
         $request->validate(['start' => 'sometimes|date']);
-        $start = $request->date('start') ?? now()->startOfWeek(); // ponedeljak
+        $start = $request->date('start') ?? now()->startOfWeek();
 
         $days = collect(range(0, 4))->map(fn($i) => $start->copy()->addDays($i));
 
