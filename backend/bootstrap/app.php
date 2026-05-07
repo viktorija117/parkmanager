@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'login',
             'logout',
+            'forgot-password',
+            'reset-password',
         ]);
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
