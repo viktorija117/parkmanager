@@ -7,13 +7,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PermanentReservationResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'           => $this->id,
+            'user'         => new UserResource($this->whenLoaded('user')),
+            'parking_space' => new ParkingSpaceResource($this->whenLoaded('parkingSpace')),
+            'starts_on'    => $this->starts_on?->toDateString(),
+            'ends_on'      => $this->ends_on?->toDateString(),
+            'admin_notes'  => $this->admin_notes,
+        ];
     }
 }

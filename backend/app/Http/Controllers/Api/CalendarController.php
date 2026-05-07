@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\ParkingSpace;
-use App\Models\PermanentReservation;
-use App\Models\Reservation;
 use App\Http\Resources\ReservationResource;
 use App\Http\Resources\UserResource;
+use App\Models\PermanentReservation;
+use App\Models\ParkingSpace;
+use App\Models\Reservation;
+use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
@@ -17,37 +17,37 @@ class CalendarController extends Controller
         $request->validate(['start' => 'sometimes|date']);
         $start = $request->date('start') ?? now()->startOfWeek();
 
-        $days = collect(range(0, 4))->map(fn($i) => $start->copy()->addDays($i));
+        $days = collect(range(0, 4))->map(fn ($i) => $start->copy()->addDays($i));
 
         $allSpaces = ParkingSpace::active()->with('permanentReservation.user')->get();
         $permanentSpaceIds = PermanentReservation::pluck('parking_space_id')->all();
 
         $reservationsByDate = Reservation::confirmed()
             ->whereBetween('date', [$days->first(), $days->last()])
-            ->with('user', 'parkingSpace')
+            ->select(['date', 'parking_space_id'])
             ->get()
-            ->groupBy(fn($r) => $r->date->toDateString());
+            ->groupBy(fn ($r) => $r->date->toDateString());
 
         $myReservationsByDate = Reservation::confirmed()
             ->where('user_id', $request->user()->id)
             ->whereBetween('date', [$days->first(), $days->last()])
+            ->with('parkingSpace')
             ->get()
-            ->keyBy(fn($r) => $r->date->toDateString());
+            ->keyBy(fn ($r) => $r->date->toDateString());
 
         $result = $days->map(function ($day) use ($allSpaces, $permanentSpaceIds, $reservationsByDate, $myReservationsByDate) {
             $dateStr = $day->toDateString();
             $reservations = $reservationsByDate[$dateStr] ?? collect();
             $takenSpaceIds = $reservations->pluck('parking_space_id')->merge($permanentSpaceIds)->unique();
+            $myReservation = $myReservationsByDate[$dateStr] ?? null;
 
             return [
-                'date' => $dateStr,
-                'day_label' => $day->isoFormat('ddd D.M'),
-                'available_count' => $allSpaces->whereNotIn('id', $takenSpaceIds)->count(),
-                'taken_count' => $reservations->count(),
-                'permanent_count' => count($permanentSpaceIds),
-                'my_reservation' => $myReservationsByDate[$dateStr] ?? null
-                    ? new ReservationResource($myReservationsByDate[$dateStr]->load('parkingSpace'))
-                    : null,
+                'date'             => $dateStr,
+                'day_label'        => $day->isoFormat('ddd D.M'),
+                'available_count'  => $allSpaces->whereNotIn('id', $takenSpaceIds)->count(),
+                'taken_count'      => $reservations->count(),
+                'permanent_count'  => count($permanentSpaceIds),
+                'my_reservation'   => $myReservation ? new ReservationResource($myReservation) : null,
             ];
         });
 
@@ -62,7 +62,7 @@ class CalendarController extends Controller
         $allSpaces = ParkingSpace::active()
             ->with([
                 'permanentReservation.user',
-                'reservations' => fn($q) => $q->confirmed()->whereDate('date', $date)->with('user'),
+                'reservations' => fn ($q) => $q->confirmed()->whereDate('date', $date)->with('user'),
             ])
             ->get();
 

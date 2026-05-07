@@ -3,10 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Models\Reservation;
-use App\Services\ReservationPolicy;
+use App\Services\ReservationRules;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class CreateReservationRequest extends FormRequest
 {
@@ -18,22 +19,22 @@ class CreateReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'             => ['required', Rule::in(['single', 'multiple', 'full_week'])],
-            'dates'            => ['required_if:type,multiple', 'array', 'min:1', 'max:5'],
-            'dates.*'          => ['date', 'after_or_equal:today'],
-            'date'             => ['required_if:type,single', 'date', 'after_or_equal:today'],
-            'week_start'       => ['required_if:type,full_week', 'date'],
+            'type' => ['required', Rule::in(['single', 'multiple', 'full_week'])],
+            'dates' => ['required_if:type,multiple', 'array', 'min:1', 'max:5'],
+            'dates.*' => ['date', 'after:today'],
+            'date' => ['required_if:type,single', 'date', 'after:today'],
+            'week_start' => ['required_if:type,full_week', 'date'],
             'parking_space_id' => ['nullable', 'exists:parking_spaces,id'],
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function ($validator) {
+        $validator->after(function (Validator $validator) {
             foreach ($this->resolvedDates() as $date) {
                 $d = Carbon::parse($date);
 
-                if (!ReservationPolicy::canReserve($d)) {
+                if (!ReservationRules::canReserve($d)) {
                     $validator->errors()->add('dates', __('reservations.invalid_date', ['date' => $date]));
                     continue;
                 }
