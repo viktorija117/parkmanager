@@ -15,7 +15,7 @@ Aplikacija za rezervaciju parking mesta u kancelariji. Zaposleni rezervišu slob
 parkmanager/
 ├── backend/             # Laravel API
 ├── frontend/            # Vue 3 aplikacija (Vite)
-└── docker-compose.yml   # postgres, backend, frontend
+└── docker-compose.yml   # postgres, backend, queue, scheduler, mailpit, frontend
 ```
 
 ## Šta ti treba
@@ -57,4 +57,28 @@ Otvori u browseru:
 |---|---|
 | Frontend | http://localhost:5173 |
 | Backend (API) | http://localhost:8000 |
+| Mail inbox (Mailpit) | http://localhost:8025 |
 | Postgres | `localhost:5432` — baza `parkmanager`, korisnik `parkmanager`, lozinka `secret` |
+
+## Mejlovi i pozadinski poslovi
+
+| Kontejner | Šta radi |
+|---|---|
+| `mailpit` | Hvata sve mejlove u lokalnom razvoju (SMTP `mailpit:1025`). Inbox: http://localhost:8025 |
+| `queue` | `php artisan queue:work --tries=3` — izvršava poslove iz `jobs` tabele (`QUEUE_CONNECTION=database`) |
+| `scheduler` | `php artisan schedule:work` — pokreće zakazane zadatke svakog minuta |
+
+Test mejl (pojavljuje se na http://localhost:8025):
+
+```bash
+docker compose exec backend php artisan tinker --execute="Mail::raw('Test', fn(\$m) => \$m->to('test@example.com')->subject('Test'));"
+```
+
+Logovi:
+
+```bash
+docker compose logs -f queue
+docker compose logs -f scheduler
+```
+
+> Queue worker drži kod u memoriji — posle izmene job/mail klasa pokreni `docker compose restart queue`.
